@@ -1,0 +1,16 @@
+
+{
+  "required": true,
+  "package": "net.electricdog.zoomies.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "CameraZoomMixin",
+    "ScrollInterceptMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
+}
