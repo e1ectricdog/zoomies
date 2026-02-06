@@ -18,12 +18,26 @@ public class ConfigurationScreen {
                 .category(ConfigCategory.createBuilder()
                         .name(Text.literal("Zoom Behavior"))
 
+                        .option(Option.<Boolean>createBuilder()
+                                .name(Text.literal("Smooth Zooming"))
+                                .description(OptionDescription.of(Text.literal(
+                                        "Enable or disable smooth zooming.\n"
+                                )))
+                                .binding(
+                                        defaults.smoothZooming,
+                                        () -> config.smoothZooming,
+                                        val -> config.smoothZooming = val
+                                )
+                                .controller(TickBoxControllerBuilder::create)
+                                .build())
+
                         .option(Option.<Float>createBuilder()
                                 .name(Text.literal("Transition Speed"))
                                 .description(OptionDescription.of(Text.literal(
                                         "Controls how quickly the zoom transitions occur.\n" +
-                                                "Higher values = snappier zoom response.\n" +
-                                                "Lower values = smoother, more gradual transitions."
+                                                "Higher values = quicker zoom response.\n" +
+                                                "Lower values = smoother, more gradual zooms.\n" +
+                                                "Requires smooth zooming to be enabled to take effect."
                                 )))
                                 .binding(
                                         (float) defaults.zoomTransitionSpeed,
@@ -44,9 +58,7 @@ public class ConfigurationScreen {
                         .option(Option.<Boolean>createBuilder()
                                 .name(Text.literal("Normalize Mouse Sensitivity"))
                                 .description(OptionDescription.of(Text.literal(
-                                        "Automatically adjusts mouse sensitivity based on zoom level.\n" +
-                                                "When enabled, mouse movement feels consistent regardless of zoom.\n" +
-                                                "Disable if you prefer raw mouse input."
+                                        "Automatically adjusts mouse sensitivity based on zoom level."
                                 )))
                                 .binding(
                                         defaults.normalizeMouseSensitivity,
@@ -60,8 +72,7 @@ public class ConfigurationScreen {
                                 .name(Text.literal("Disable View Bobbing"))
                                 .description(OptionDescription.of(Text.literal(
                                         "Disables camera bobbing when zoomed in.\n" +
-                                                "Provides a stable, steady view while zooming.\n" +
-                                                "Your normal view bobbing setting is restored when zoom ends."
+                                                "Provides a stable, steady view while zooming and moving around."
                                 )))
                                 .binding(
                                         defaults.disableViewBobbing,

@@ -15,8 +15,9 @@ import org.lwjgl.glfw.GLFW;
 
 public class ZoomController implements ClientModInitializer {
 
-    private static final float MAX_ZOOM_MULTIPLIER = 10.0f;
+    private static final float MAX_ZOOM_MULTIPLIER = 100.0f;
     private static final float MIN_ZOOM_MULTIPLIER = 1.0f;
+    private static final float INITIAL_ZOOM_MULTIPLIER = 3.0f;
 
     public static KeyBinding activateZoom;
 
@@ -55,17 +56,21 @@ public class ZoomController implements ClientModInitializer {
             targetIntensity = 0.0f;
         }
 
-        if (zoomActive) {
-            if (targetIntensity < 0.1f) targetIntensity = 0.2f;
+        if (zoomActive && !wasActive) {
+            targetIntensity = (INITIAL_ZOOM_MULTIPLIER - MIN_ZOOM_MULTIPLIER) / (MAX_ZOOM_MULTIPLIER - MIN_ZOOM_MULTIPLIER);
+            targetIntensity = Math.max(0.0f, Math.min(1.0f, targetIntensity));
         }
 
         ModConfiguration config = ModConfiguration.get();
 
-        float smoothSpeed = (float) config.zoomTransitionSpeed * 0.25f;
+        if (config.smoothZooming) {
+            float smoothSpeed = (float) config.zoomTransitionSpeed * 0.25f;
+            currentIntensity += (targetIntensity - currentIntensity) * smoothSpeed;
 
-        currentIntensity += (targetIntensity - currentIntensity) * smoothSpeed;
-
-        if (Math.abs(currentIntensity - targetIntensity) < 0.001f) {
+            if (Math.abs(currentIntensity - targetIntensity) < 0.001f) {
+                currentIntensity = targetIntensity;
+            }
+        } else {
             currentIntensity = targetIntensity;
         }
 
@@ -139,7 +144,14 @@ public class ZoomController implements ClientModInitializer {
     public static float getCurrentFOVMultiplier(float tickDelta) {
         if (!isZooming()) return 1.0f;
 
-        float t = MathHelper.lerp(tickDelta, prevIntensity, currentIntensity);
+        ModConfiguration config = ModConfiguration.get();
+        float t;
+
+        if (config.smoothZooming) {
+            t = MathHelper.lerp(tickDelta, prevIntensity, currentIntensity);
+        } else {
+            t = currentIntensity;
+        }
 
         float zoomMultiplier = MIN_ZOOM_MULTIPLIER + (MAX_ZOOM_MULTIPLIER - MIN_ZOOM_MULTIPLIER) * t;
         return 1.0f / zoomMultiplier;

@@ -22,7 +22,8 @@ public class ModConfiguration {
 
     public double zoomTransitionSpeed = 2.5;
     public boolean normalizeMouseSensitivity = true;
-    public boolean disableViewBobbing = true;
+    public boolean disableViewBobbing = false;
+    public boolean smoothZooming = true;
 
     public static void initialize() {
         if (Files.exists(CONFIG_FILE)) {
