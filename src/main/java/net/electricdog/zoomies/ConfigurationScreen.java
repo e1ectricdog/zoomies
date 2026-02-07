@@ -84,6 +84,44 @@ public class ConfigurationScreen {
 
                         .build())
 
+                .category(ConfigCategory.createBuilder()
+                        .name(Text.literal("Visual Effects"))
+
+                        .option(Option.<Boolean>createBuilder()
+                                .name(Text.literal("Enable Vignette"))
+                                .description(OptionDescription.of(Text.literal(
+                                        "Adds a subtle darkening effect around the edges when zoomed in.\n" +
+                                                "Helps focus attention on the center of the screen."
+                                )))
+                                .binding(
+                                        defaults.enableVignette,
+                                        () -> config.enableVignette,
+                                        val -> config.enableVignette = val
+                                )
+                                .controller(TickBoxControllerBuilder::create)
+                                .build())
+
+                        .option(Option.<Float>createBuilder()
+                                .name(Text.literal("Vignette Intensity"))
+                                .description(OptionDescription.of(Text.literal(
+                                        "Controls how strong the vignette effect is.\n" +
+                                                "Higher values = more pronounced darkening.\n" +
+                                                "Lower values = subtle effect.\n" +
+                                                "Requires vignette to be enabled to take effect."
+                                )))
+                                .binding(
+                                        (float) defaults.vignetteIntensity,
+                                        () -> (float) config.vignetteIntensity,
+                                        val -> config.vignetteIntensity = val
+                                )
+                                .controller(opt -> FloatSliderControllerBuilder.create(opt)
+                                        .range(0.0f, 1.0f)
+                                        .step(0.1f)
+                                        .formatValue(val -> Text.literal(String.format("%.1f", val))))
+                                .build())
+
+                        .build())
+
                 .save(ModConfiguration::persist)
                 .build()
                 .generateScreen(parent);

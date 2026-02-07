@@ -24,6 +24,8 @@ public class ModConfiguration {
     public boolean normalizeMouseSensitivity = true;
     public boolean disableViewBobbing = false;
     public boolean smoothZooming = true;
+    public boolean enableVignette = true;
+    public double vignetteIntensity = 0.5;
 
     public static void initialize() {
         if (Files.exists(CONFIG_FILE)) {
