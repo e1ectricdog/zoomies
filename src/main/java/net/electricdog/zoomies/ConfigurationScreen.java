@@ -88,7 +88,7 @@ public class ConfigurationScreen {
                         .build())
 
                 .category(ConfigCategory.createBuilder()
-                        .name(Text.literal("Visual Effects"))
+                        .name(Text.literal("Visuals"))
 
                         .option(Option.<ZoomUIStyle>createBuilder()
                                 .name(Text.literal("Zoom UI Style"))

@@ -8,6 +8,9 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -20,6 +23,9 @@ public class ZoomIndicatorMixin {
 
     @Unique
     private float animationProgress = 0.0f;
+
+    @Unique
+    private float coordsAnimationProgress = 0.0f;
 
     @Inject(
             method = "render",
@@ -58,6 +64,10 @@ public class ZoomIndicatorMixin {
             case MINIMAL:
                 renderMinimal(context, zoomLevel, animationProgress);
                 break;
+        }
+
+        if (zoomLevel >= 40.0f) {
+            renderBlockCoordinates(context, tickDelta);
         }
     }
 
@@ -184,5 +194,74 @@ public class ZoomIndicatorMixin {
 
         context.drawText(textRenderer, zoomText, textX + 1, textY + 1, shadowColor, false);
         context.drawText(textRenderer, zoomText, textX, textY, textColor, false);
+    }
+
+    @Unique
+    private void renderBlockCoordinates(DrawContext context, float tickDelta) {
+        MinecraftClient client = MinecraftClient.getInstance();
+        if (client.player == null || client.world == null) {
+            coordsAnimationProgress = Math.max(0.0f, coordsAnimationProgress - 0.1f);
+            return;
+        }
+
+        double maxDistance = 512.0;
+
+        net.minecraft.util.math.Vec3d cameraPos = client.player.getCameraPosVec(tickDelta);
+        net.minecraft.util.math.Vec3d lookVec = client.player.getRotationVec(tickDelta);
+        net.minecraft.util.math.Vec3d endVec = cameraPos.add(
+                lookVec.x * maxDistance,
+                lookVec.y * maxDistance,
+                lookVec.z * maxDistance
+        );
+
+        BlockHitResult hitResult = client.world.raycast(new net.minecraft.world.RaycastContext(
+                cameraPos,
+                endVec,
+                net.minecraft.world.RaycastContext.ShapeType.OUTLINE,
+                net.minecraft.world.RaycastContext.FluidHandling.NONE,
+                client.player
+        ));
+
+        if (hitResult.getType() != HitResult.Type.BLOCK) {
+            coordsAnimationProgress = Math.max(0.0f, coordsAnimationProgress - 0.1f);
+            if (coordsAnimationProgress <= 0.0f) return;
+        } else {
+            coordsAnimationProgress = Math.min(1.0f, coordsAnimationProgress + 0.15f);
+        }
+
+        if (coordsAnimationProgress <= 0.0f) return;
+
+        BlockPos pos = hitResult.getBlockPos();
+
+        TextRenderer textRenderer = client.textRenderer;
+
+        String coordText = String.format("X: %d Y: %d Z: %d", pos.getX(), pos.getY(), pos.getZ());
+
+        int screenWidth = context.getScaledWindowWidth();
+        int screenHeight = context.getScaledWindowHeight();
+
+        int textWidth = textRenderer.getWidth(coordText);
+        int textHeight = textRenderer.fontHeight;
+
+        int padding = 6;
+        int bgPadding = 3;
+        int x = screenWidth - textWidth - padding - bgPadding * 2;
+        int y = screenHeight - textHeight - padding - bgPadding * 2;
+
+        float easeProgress = (float) (1.0 - Math.pow(1.0 - coordsAnimationProgress, 3));
+
+        int bgColor = (int) (easeProgress * 120) << 24;
+        int borderColor = (int)(easeProgress * 150) << 24 | 0x00FFE6;
+
+        context.fill(x - bgPadding - 1, y - bgPadding - 1,
+                x + textWidth + bgPadding + 1, y + textHeight + bgPadding + 1, borderColor);
+        context.fill(x - bgPadding, y - bgPadding,
+                x + textWidth + bgPadding, y + textHeight + bgPadding, bgColor);
+
+        int textColor = (int)(easeProgress * 255) << 24 | 0xFFFFFF;
+        int shadowColor = (int)(easeProgress * 100) << 24;
+
+        context.drawText(textRenderer, coordText, x + 1, y + 1, shadowColor, false);
+        context.drawText(textRenderer, coordText, x, y, textColor, false);
     }
 }

@@ -17,9 +17,6 @@
         "client": [
           "net.electricdog.zoomies.ZoomController"
         ],
-		"fabric-datagen": [
-			"net.electricdog.zoomies.ZoomiesDataGenerator"
-		],
         "modmenu": [
           "net.electricdog.zoomies.ZoomiesModMenu"
         ]
