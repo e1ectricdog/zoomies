@@ -52,7 +52,7 @@ public class ZoomController implements ClientModInitializer {
         createWaypoint = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key.zoomies.waypoint",
                 InputUtil.Type.KEYSYM,
-                GLFW.GLFW_KEY_B,
+                GLFW.GLFW_KEY_N,
                 ZOOMIES_CATEGORY
         ));
 

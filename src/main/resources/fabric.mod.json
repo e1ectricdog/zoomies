@@ -29,11 +29,11 @@
 		"minecraft": "~1.21.11",
 		"java": ">=21",
 		"fabric-api": "*",
-        "fabric-lifecycle-events-v1": "*",
-        "fabric-key-binding-api-v1": "*",
         "yet_another_config_lib_v3": "*"
 	},
     "suggests": {
+      "fabric-lifecycle-events-v1": "*",
+      "fabric-key-binding-api-v1": "*",
       "modmenu": "*",
       "xaerominimap": "*"
     }
