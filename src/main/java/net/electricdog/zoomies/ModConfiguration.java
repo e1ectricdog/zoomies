@@ -26,6 +26,7 @@ public class ModConfiguration {
     public boolean smoothZooming = true;
     public boolean enableVignette = true;
     public double vignetteIntensity = 0.5;
+    public String zoomUIStyle = "PROGRESS_BAR"; // PROGRESS_BAR, WINDOW, MINIMAL, NONE
 
     public static void initialize() {
         if (Files.exists(CONFIG_FILE)) {

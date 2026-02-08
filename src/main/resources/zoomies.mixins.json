@@ -6,7 +6,8 @@
   "client": [
     "CameraZoomMixin",
     "ScrollInterceptMixin",
-    "VignetteMixin"
+    "VignetteMixin",
+    "ZoomIndicatorMixin"
   ],
   "injectors": {
     "defaultRequire": 1

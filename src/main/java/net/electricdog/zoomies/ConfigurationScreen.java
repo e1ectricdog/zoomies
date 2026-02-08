@@ -1,6 +1,7 @@
 package net.electricdog.zoomies;
 
 import dev.isxander.yacl3.api.*;
+import dev.isxander.yacl3.api.controller.EnumControllerBuilder;
 import dev.isxander.yacl3.api.controller.FloatSliderControllerBuilder;
 import dev.isxander.yacl3.api.controller.TickBoxControllerBuilder;
 import net.minecraft.client.gui.screen.Screen;
@@ -21,7 +22,7 @@ public class ConfigurationScreen {
                         .option(Option.<Boolean>createBuilder()
                                 .name(Text.literal("Smooth Zooming"))
                                 .description(OptionDescription.of(Text.literal(
-                                        "Enable or disable smooth zooming.\n"
+                                        "Enable or disable smooth zooming."
                                 )))
                                 .binding(
                                         defaults.smoothZooming,
@@ -34,10 +35,11 @@ public class ConfigurationScreen {
                         .option(Option.<Float>createBuilder()
                                 .name(Text.literal("Transition Speed"))
                                 .description(OptionDescription.of(Text.literal(
-                                        "Controls how quickly the zoom transitions occur.\n" +
-                                                "Higher values = quicker zoom response.\n" +
-                                                "Lower values = smoother, more gradual zooms.\n" +
-                                                "Requires smooth zooming to be enabled to take effect."
+                                        """
+                                                Controls how quickly the zoom transitions occur.
+                                                Higher values = quicker zoom response.
+                                                Lower values = smoother, more gradual zooms.
+                                                Requires smooth zooming to be enabled to take effect."""
                                 )))
                                 .binding(
                                         (float) defaults.zoomTransitionSpeed,
@@ -71,8 +73,9 @@ public class ConfigurationScreen {
                         .option(Option.<Boolean>createBuilder()
                                 .name(Text.literal("Disable View Bobbing"))
                                 .description(OptionDescription.of(Text.literal(
-                                        "Disables camera bobbing when zoomed in.\n" +
-                                                "Provides a stable, steady view while zooming and moving around."
+                                        """
+                                               Disables camera bobbing when zoomed in,
+                                               Provides a stable view when moving around."""
                                 )))
                                 .binding(
                                         defaults.disableViewBobbing,
@@ -87,11 +90,34 @@ public class ConfigurationScreen {
                 .category(ConfigCategory.createBuilder()
                         .name(Text.literal("Visual Effects"))
 
+                        .option(Option.<ZoomUIStyle>createBuilder()
+                                .name(Text.literal("Zoom UI Style"))
+                                .description(OptionDescription.of(Text.literal(
+                                        """
+                                                Choose how the zoom level is displayed.
+                                                
+                                                Progress Bar,
+                                                
+                                                Window,
+                                                
+                                                Minimal (Text display only),
+                                                
+                                                None."""
+                                )))
+                                .binding(
+                                        ZoomUIStyle.valueOf(defaults.zoomUIStyle),
+                                        () -> ZoomUIStyle.valueOf(config.zoomUIStyle),
+                                        val -> config.zoomUIStyle = val.name()
+                                )
+                                .controller(opt -> EnumControllerBuilder.create(opt)
+                                        .enumClass(ZoomUIStyle.class))
+                                .build())
+
                         .option(Option.<Boolean>createBuilder()
                                 .name(Text.literal("Enable Vignette"))
                                 .description(OptionDescription.of(Text.literal(
-                                        "Adds a subtle darkening effect around the edges when zoomed in.\n" +
-                                                "Helps focus attention on the center of the screen."
+                                        """
+                                               Self explanatory."""
                                 )))
                                 .binding(
                                         defaults.enableVignette,
@@ -104,10 +130,14 @@ public class ConfigurationScreen {
                         .option(Option.<Float>createBuilder()
                                 .name(Text.literal("Vignette Intensity"))
                                 .description(OptionDescription.of(Text.literal(
-                                        "Controls how strong the vignette effect is.\n" +
-                                                "Higher values = more pronounced darkening.\n" +
-                                                "Lower values = subtle effect.\n" +
-                                                "Requires vignette to be enabled to take effect."
+                                        """
+                                                Controls how strong the vignette effect is.
+                                                
+                                                Higher values = more pronounced darkening.
+                                                
+                                                Lower values = subtle effect.
+                                                
+                                                Requires vignette to be enabled to take effect."""
                                 )))
                                 .binding(
                                         (float) defaults.vignetteIntensity,
