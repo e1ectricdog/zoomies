@@ -1,6 +1,7 @@
 package net.electricdog.zoomies.mixin;
 
 import net.electricdog.zoomies.ModConfiguration;
+import net.electricdog.zoomies.XaeroIntegration;
 import net.electricdog.zoomies.ZoomController;
 import net.electricdog.zoomies.ZoomUIStyle;
 import net.minecraft.client.MinecraftClient;
@@ -66,8 +67,8 @@ public class ZoomIndicatorMixin {
                 break;
         }
 
-        if (zoomLevel >= 40.0f) {
-            renderBlockCoordinates(context, tickDelta);
+        if (config.showBlockCoordinates && zoomLevel >= 40.0f) {
+            renderBlockCoordinates(context, tickDelta, config);
         }
     }
 
@@ -197,10 +198,11 @@ public class ZoomIndicatorMixin {
     }
 
     @Unique
-    private void renderBlockCoordinates(DrawContext context, float tickDelta) {
+    private void renderBlockCoordinates(DrawContext context, float tickDelta, ModConfiguration config) {
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.player == null || client.world == null) {
             coordsAnimationProgress = Math.max(0.0f, coordsAnimationProgress - 0.1f);
+            ZoomController.setLastTargetedBlock(null);
             return;
         }
 
@@ -224,9 +226,11 @@ public class ZoomIndicatorMixin {
 
         if (hitResult.getType() != HitResult.Type.BLOCK) {
             coordsAnimationProgress = Math.max(0.0f, coordsAnimationProgress - 0.1f);
+            ZoomController.setLastTargetedBlock(null);
             if (coordsAnimationProgress <= 0.0f) return;
         } else {
             coordsAnimationProgress = Math.min(1.0f, coordsAnimationProgress + 0.15f);
+            ZoomController.setLastTargetedBlock(hitResult.getBlockPos());
         }
 
         if (coordsAnimationProgress <= 0.0f) return;
@@ -242,6 +246,20 @@ public class ZoomIndicatorMixin {
 
         int textWidth = textRenderer.getWidth(coordText);
         int textHeight = textRenderer.fontHeight;
+
+        String waypointText = "";
+        boolean showWaypointPrompt = config.enableWaypointIntegration &&
+                XaeroIntegration.isXaerosMinimapLoaded();
+
+        if (showWaypointPrompt) {
+            String keyName = ZoomController.createWaypoint.getBoundKeyLocalizedText().getString();
+            waypointText = String.format("Press %s to waypoint", keyName);
+            int waypointWidth = textRenderer.getWidth(waypointText);
+            if (waypointWidth > textWidth) {
+                textWidth = waypointWidth;
+            }
+            textHeight += textRenderer.fontHeight + 2;
+        }
 
         int padding = 6;
         int bgPadding = 3;
@@ -263,5 +281,12 @@ public class ZoomIndicatorMixin {
 
         context.drawText(textRenderer, coordText, x + 1, y + 1, shadowColor, false);
         context.drawText(textRenderer, coordText, x, y, textColor, false);
+
+        if (showWaypointPrompt) {
+            int waypointY = y + textRenderer.fontHeight + 2;
+            int waypointColor = (int)(easeProgress * 255) << 24 | 0xFFFF00; // Yellow
+            context.drawText(textRenderer, waypointText, x + 1, waypointY + 1, shadowColor, false);
+            context.drawText(textRenderer, waypointText, x, waypointY, waypointColor, false);
+        }
     }
 }

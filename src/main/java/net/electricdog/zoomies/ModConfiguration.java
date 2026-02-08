@@ -28,6 +28,10 @@ public class ModConfiguration {
     public double vignetteIntensity = 0.5;
     public String zoomUIStyle = "PROGRESS_BAR"; // PROGRESS_BAR, WINDOW, MINIMAL, NONE
 
+    public boolean showBlockCoordinates = true;
+    public boolean enableWaypointIntegration = true;
+    public String waypointType = "NORMAL"; // NORMAL, DESTINATION
+
     public static void initialize() {
         if (Files.exists(CONFIG_FILE)) {
             try {

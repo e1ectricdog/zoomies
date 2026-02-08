@@ -6,11 +6,13 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.glfw.GLFW;
 
-// You will see some really dodgey code because I can't code very well
+// You will see some really dodgey code
 // Apologies in advance
 
 public class ZoomController implements ClientModInitializer {
@@ -20,6 +22,7 @@ public class ZoomController implements ClientModInitializer {
     private static final float INITIAL_ZOOM_MULTIPLIER = 3.0f;
 
     public static KeyBinding activateZoom;
+    public static KeyBinding createWaypoint;
 
     private static boolean zoomActive = false;
     private static float targetIntensity = 0.0f;
@@ -30,14 +33,29 @@ public class ZoomController implements ClientModInitializer {
     private static Double savedMouseSensitivity = null;
     private static Boolean savedViewBobbing = null;
 
+    private static BlockPos lastTargetedBlock = null;
+
     @Override
     public void onInitializeClient() {
+
+        KeyBinding.Category ZOOMIES_CATEGORY = KeyBinding.Category.create(
+                Identifier.of("zoomies", "controls")
+        );
+
         activateZoom = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key.zoomies.activate",
                 InputUtil.Type.KEYSYM,
                 GLFW.GLFW_KEY_C,
-                KeyBinding.Category.create(Identifier.of("zoomies", "controls"))
+                ZOOMIES_CATEGORY
         ));
+
+        createWaypoint = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                "key.zoomies.waypoint",
+                InputUtil.Type.KEYSYM,
+                GLFW.GLFW_KEY_B,
+                ZOOMIES_CATEGORY
+        ));
+
 
         ModConfiguration.initialize();
 
@@ -76,6 +94,49 @@ public class ZoomController implements ClientModInitializer {
 
         applyMouseSensitivity(client, config);
         applyViewBobbing(client, config);
+
+        handleWaypointCreation(client, config);
+    }
+
+    private void handleWaypointCreation(MinecraftClient client, ModConfiguration config) {
+        if (!config.enableWaypointIntegration || !XaeroIntegration.isXaerosMinimapLoaded()) {
+            return;
+        }
+
+        if (createWaypoint.wasPressed() && lastTargetedBlock != null) {
+            createWaypointAtBlock(client, lastTargetedBlock, config);
+        }
+    }
+
+    private void createWaypointAtBlock(MinecraftClient client, BlockPos pos, ModConfiguration config) {
+        try {
+            WaypointType type = WaypointType.valueOf(config.waypointType);
+            String name = XaeroIntegration.generateWaypointName(pos);
+
+            boolean success = XaeroIntegration.createWaypoint(pos, name, type);
+
+            if (success && client.player != null) {
+                client.player.sendMessage(
+                        Text.literal("§aWaypoint created at " + pos.getX() + ", " + pos.getY() + ", " + pos.getZ()),
+                        true
+                );
+            } else if (!success && client.player != null) {
+                client.player.sendMessage(
+                        Text.literal("§cFailed to create waypoint"),
+                        true
+                );
+            }
+        } catch (IllegalArgumentException e) {
+            ZoomiesMod.LOGGER.error("Invalid waypoint type: " + config.waypointType, e);
+        }
+    }
+
+    public static void setLastTargetedBlock(BlockPos pos) {
+        lastTargetedBlock = pos;
+    }
+
+    public static BlockPos getLastTargetedBlock() {
+        return lastTargetedBlock;
     }
 
     private void applyMouseSensitivity(MinecraftClient client, ModConfiguration config) {

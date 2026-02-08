@@ -74,7 +74,7 @@ public class ConfigurationScreen {
                                 .name(Text.literal("Disable View Bobbing"))
                                 .description(OptionDescription.of(Text.literal(
                                         """
-                                               Disables camera bobbing when zoomed in,
+                                               Disables camera bobbing when zoomed in.
                                                Provides a stable view when moving around."""
                                 )))
                                 .binding(
@@ -116,8 +116,7 @@ public class ConfigurationScreen {
                         .option(Option.<Boolean>createBuilder()
                                 .name(Text.literal("Enable Vignette"))
                                 .description(OptionDescription.of(Text.literal(
-                                        """
-                                               Self explanatory."""
+                                        "Adds a darkening effect around the edges when zoomed in."
                                 )))
                                 .binding(
                                         defaults.enableVignette,
@@ -148,6 +147,64 @@ public class ConfigurationScreen {
                                         .range(0.0f, 1.0f)
                                         .step(0.1f)
                                         .formatValue(val -> Text.literal(String.format("%.1f", val))))
+                                .build())
+
+                        .option(Option.<Boolean>createBuilder()
+                                .name(Text.literal("Show Block Coordinates"))
+                                .description(OptionDescription.of(Text.literal(
+                                        """
+                                                Show coordinates of the block you're looking at
+                                                when zoomed in at 40x or more magnification."""
+                                )))
+                                .binding(
+                                        defaults.showBlockCoordinates,
+                                        () -> config.showBlockCoordinates,
+                                        val -> config.showBlockCoordinates = val
+                                )
+                                .controller(TickBoxControllerBuilder::create)
+                                .build())
+
+                        .build())
+
+                .category(ConfigCategory.createBuilder()
+                        .name(Text.literal("Waypoint Integration"))
+                        .tooltip(Text.literal("Requires Xaero's Minimap to be installed"))
+
+                        .option(Option.<Boolean>createBuilder()
+                                .name(Text.literal("Enable Waypoint Integration"))
+                                .description(OptionDescription.of(Text.literal(
+                                        """
+                                                Enable integration with Xaero's Minimap.
+                                                When zoomed in and looking at a block,
+                                                you can press a key to create a waypoint.
+                                                
+                                                Requires Xaero's Minimap to be installed."""
+                                )))
+                                .binding(
+                                        defaults.enableWaypointIntegration,
+                                        () -> config.enableWaypointIntegration,
+                                        val -> config.enableWaypointIntegration = val
+                                )
+                                .controller(TickBoxControllerBuilder::create)
+                                .build())
+
+                        .option(Option.<WaypointType>createBuilder()
+                                .name(Text.literal("Waypoint Type"))
+                                .description(OptionDescription.of(Text.literal(
+                                        """
+                                                Choose what type of waypoint to create.
+                                                
+                                                Normal,
+                                                
+                                                Destination."""
+                                )))
+                                .binding(
+                                        WaypointType.valueOf(defaults.waypointType),
+                                        () -> WaypointType.valueOf(config.waypointType),
+                                        val -> config.waypointType = val.name()
+                                )
+                                .controller(opt -> EnumControllerBuilder.create(opt)
+                                        .enumClass(WaypointType.class))
                                 .build())
 
                         .build())
