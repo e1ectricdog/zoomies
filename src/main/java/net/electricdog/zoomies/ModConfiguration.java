@@ -20,7 +20,10 @@ public class ModConfiguration {
 
     private static ModConfiguration instance;
 
+    // alot of doubles don't need to be doubles
+
     public double zoomTransitionSpeed = 2.5;
+    public double zoomScrollSensitivity = 1;
     public boolean normalizeMouseSensitivity = true;
     public boolean disableViewBobbing = false;
     public boolean smoothZooming = true;

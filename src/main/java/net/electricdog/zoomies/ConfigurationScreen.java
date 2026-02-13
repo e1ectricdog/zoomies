@@ -52,6 +52,23 @@ public class ConfigurationScreen {
                                         .formatValue(val -> Text.literal(String.format("%.1fx", val))))
                                 .build())
 
+                        .option(Option.<Float>createBuilder()
+                                .name(Text.literal("Scroll Zoom Sensitivity"))
+                                .description(OptionDescription.of(Text.literal(
+                                        """
+                                                Change this if you are experiencing the scroll to be too fast or too slow."""
+                                )))
+                                .binding(
+                                        (float) defaults.zoomScrollSensitivity,
+                                        () -> (float) config.zoomScrollSensitivity,
+                                        val -> config.zoomScrollSensitivity = val
+                                )
+                                .controller(opt -> FloatSliderControllerBuilder.create(opt)
+                                        .range(0.5f, 2.0f)
+                                        .step(0.5f)
+                                        .formatValue(val -> Text.literal(String.format("%.1fx", val))))
+                                .build())
+
                         .build())
 
                 .category(ConfigCategory.createBuilder()

@@ -1,6 +1,7 @@
 package net.electricdog.zoomies;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
@@ -58,6 +59,8 @@ public class ZoomController implements ClientModInitializer {
 
 
         ModConfiguration.initialize();
+
+        ClientCommandRegistrationCallback.EVENT.register(ZoomiesCommand::register);
 
         ClientTickEvents.END_CLIENT_TICK.register(this::onClientTick);
     }
@@ -190,8 +193,12 @@ public class ZoomController implements ClientModInitializer {
     public static void processScroll(float scrollDelta) {
         if (!zoomActive) return;
 
+        ModConfiguration config = ModConfiguration.get();
+
         float baseStep = 0.02f + (targetIntensity * 0.08f);
-        float step = baseStep * Math.signum(scrollDelta);
+
+        float sensitivityMultiplier = (float) config.zoomScrollSensitivity;
+        float step = baseStep * sensitivityMultiplier * Math.signum(scrollDelta);
 
         targetIntensity += step;
         targetIntensity = Math.max(0.0f, Math.min(1.0f, targetIntensity));
