@@ -67,7 +67,7 @@ public class ZoomIndicatorMixin {
                 break;
         }
 
-        if (config.showBlockCoordinates && zoomLevel >= 40.0f) {
+        if (config.showBlockCoordinates && zoomLevel >= config.minZoomForDecorations) {
             renderBlockCoordinates(context, tickDelta, config);
         }
     }

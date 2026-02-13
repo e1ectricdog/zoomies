@@ -32,6 +32,7 @@ public class ModConfiguration {
     public String zoomUIStyle = "PROGRESS_BAR"; // PROGRESS_BAR, WINDOW, MINIMAL, NONE
 
     public boolean showBlockCoordinates = true;
+    public double minZoomForDecorations = 40.0;
     public boolean enableWaypointIntegration = true;
     public String waypointType = "NORMAL"; // NORMAL, DESTINATION
 
