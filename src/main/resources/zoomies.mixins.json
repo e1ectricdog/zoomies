@@ -7,7 +7,8 @@
     "CameraZoomMixin",
     "ScrollInterceptMixin",
     "VignetteMixin",
-    "ZoomIndicatorMixin"
+    "ZoomIndicatorMixin",
+    "EntityOverlayMixin"
   ],
   "injectors": {
     "defaultRequire": 1

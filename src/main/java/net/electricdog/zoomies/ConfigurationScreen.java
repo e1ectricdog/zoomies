@@ -235,6 +235,71 @@ public class ConfigurationScreen {
 
                                 .build())
 
+                        .group(OptionGroup.createBuilder()
+                                .name(Text.literal("Entity Information"))
+                                .description(OptionDescription.of(Text.literal(
+                                        "Display information about distant players and mobs while zoomed in"
+                                )))
+
+                                .option(Option.<Boolean>createBuilder()
+                                        .name(Text.literal("Show Entity Names"))
+                                        .description(OptionDescription.of(Text.literal(
+                                                "Display player names and mob names (when nametagged) when zoomed in."
+                                        )))
+                                        .binding(
+                                                defaults.showEntityNames,
+                                                () -> config.showEntityNames,
+                                                val -> config.showEntityNames = val
+                                        )
+                                        .controller(TickBoxControllerBuilder::create)
+                                        .build())
+
+                                .option(Option.<Boolean>createBuilder()
+                                        .name(Text.literal("Show Held Items"))
+                                        .description(OptionDescription.of(Text.literal(
+                                                "Display the item entities are holding in their main hand."
+                                        )))
+                                        .binding(
+                                                defaults.showEntityHeldItems,
+                                                () -> config.showEntityHeldItems,
+                                                val -> config.showEntityHeldItems = val
+                                        )
+                                        .controller(TickBoxControllerBuilder::create)
+                                        .build())
+
+                                .option(Option.<Boolean>createBuilder()
+                                        .name(Text.literal("Show Mob Types"))
+                                        .description(OptionDescription.of(Text.literal(
+                                                """
+                                                        Show mob type names for unnamed mobs.
+                                                        Only applies to mobs without custom names."""
+                                        )))
+                                        .binding(
+                                                defaults.showMobTypes,
+                                                () -> config.showMobTypes,
+                                                val -> config.showMobTypes = val
+                                        )
+                                        .controller(TickBoxControllerBuilder::create)
+                                        .build())
+
+                                .option(Option.<Float>createBuilder()
+                                        .name(Text.literal("Min Entity Zoom Level"))
+                                        .description(OptionDescription.of(Text.literal(
+                                                "The minimum zoom level required to show entity information."
+                                        )))
+                                        .binding(
+                                                (float) defaults.minZoomForEntityDecorations,
+                                                () -> (float) config.minZoomForEntityDecorations,
+                                                val -> config.minZoomForEntityDecorations = val
+                                        )
+                                        .controller(opt -> FloatSliderControllerBuilder.create(opt)
+                                                .range(5.0f, 50.0f)
+                                                .step(5.0f)
+                                                .formatValue(val -> Text.literal(String.format("%.0fx", val))))
+                                        .build())
+
+                                .build())
+
                         .build())
 
                 // Waypoint Integration
