@@ -9,6 +9,7 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.client.gui.hud.BossBarHud;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -55,15 +56,18 @@ public class ZoomIndicatorMixin {
         float fovMultiplier = ZoomController.getCurrentFOVMultiplier(tickDelta);
         float zoomLevel = 1.0f / fovMultiplier;
 
+        MinecraftClient client = MinecraftClient.getInstance();
+        int topOffset = getBossBarOffset(client);
+
         switch (style) {
             case PROGRESS_BAR:
-                renderProgressBar(context, zoomLevel, animationProgress);
+                renderProgressBar(context, zoomLevel, animationProgress, topOffset);
                 break;
             case WINDOW:
-                renderWindow(context, zoomLevel, animationProgress);
+                renderWindow(context, zoomLevel, animationProgress, topOffset);
                 break;
             case MINIMAL:
-                renderMinimal(context, zoomLevel, animationProgress);
+                renderMinimal(context, zoomLevel, animationProgress, topOffset);
                 break;
         }
 
@@ -73,13 +77,13 @@ public class ZoomIndicatorMixin {
     }
 
     @Unique
-    private void renderProgressBar(DrawContext context, float zoomLevel, float animProgress) {
+    private void renderProgressBar(DrawContext context, float zoomLevel, float animProgress, int topOffset) {
         int screenWidth = context.getScaledWindowWidth();
 
         int barWidth = 120;
         int barHeight = 3;
         int barX = (screenWidth - barWidth) / 2;
-        int barY = 15;
+        int barY = 15 + topOffset;
 
         float fillPercent = (zoomLevel - 1.0f) / 99.0f;
 
@@ -112,7 +116,7 @@ public class ZoomIndicatorMixin {
     }
 
     @Unique
-    private void renderWindow(DrawContext context, float zoomLevel, float animProgress) {
+    private void renderWindow(DrawContext context, float zoomLevel, float animProgress, int topOffset) {
         int screenWidth = context.getScaledWindowWidth();
 
         float easeProgress = (float) (1.0 - Math.pow(1.0 - animProgress, 3));
@@ -121,7 +125,7 @@ public class ZoomIndicatorMixin {
         int outerHeight = 100;
 
         int centerX = screenWidth / 2;
-        int topY = 10;
+        int topY = 10 + topOffset;
 
         int outerLeftX = centerX - outerWidth / 2;
         int outerRightX = centerX + outerWidth / 2;
@@ -178,7 +182,7 @@ public class ZoomIndicatorMixin {
     }
 
     @Unique
-    private void renderMinimal(DrawContext context, float zoomLevel, float animProgress) {
+    private void renderMinimal(DrawContext context, float zoomLevel, float animProgress, int topOffset) {
         int screenWidth = context.getScaledWindowWidth();
 
         float easeProgress = (float) (1.0 - Math.pow(1.0 - animProgress, 3));
@@ -188,7 +192,7 @@ public class ZoomIndicatorMixin {
         String zoomText = String.format("%.0fx", zoomLevel);
         int textWidth = textRenderer.getWidth(zoomText);
         int textX = (screenWidth - textWidth) / 2;
-        int textY = 15;
+        int textY = 15 + topOffset;
 
         int textColor = (int)(easeProgress * 255) << 24 | 0xFFFFFF;
         int shadowColor = (int) (easeProgress * 120) << 24;
@@ -287,6 +291,22 @@ public class ZoomIndicatorMixin {
             int waypointColor = (int)(easeProgress * 255) << 24 | 0xFFFF00; // Yellow
             context.drawText(textRenderer, waypointText, x + 1, waypointY + 1, shadowColor, false);
             context.drawText(textRenderer, waypointText, x, waypointY, waypointColor, false);
+        }
+    }
+
+    @Unique
+    private static int getBossBarOffset(MinecraftClient client) {
+        try {
+            BossBarHud bossBarHud = client.inGameHud.getBossBarHud();
+            var field = BossBarHud.class.getDeclaredField("bossBars");
+            field.setAccessible(true);
+            int count = ((java.util.Map<?, ?>) field.get(bossBarHud)).size();
+            if (count == 0) return 0;
+            // vanilla renders bars from y=12, 19px each, stopping at windowHeight/3
+            int maxHeight = client.getWindow().getScaledHeight() / 3;
+            return Math.min(count * 19, maxHeight);
+        } catch (Exception e) {
+            return 0;
         }
     }
 }

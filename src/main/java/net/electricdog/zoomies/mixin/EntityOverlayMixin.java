@@ -3,6 +3,7 @@ package net.electricdog.zoomies.mixin;
 import net.electricdog.zoomies.ModConfiguration;
 import net.electricdog.zoomies.ZoomController;
 import net.electricdog.zoomies.util.EnchantRow;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -18,6 +19,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.EnchantmentTags;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;
@@ -44,6 +46,7 @@ public class EntityOverlayMixin {
     private void renderEntityOverlay(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
         ModConfiguration config = ModConfiguration.get();
 
+        if (!config.showEntityOverlay) return;
         if (!config.showEntityNames && !config.showEntityHeldItems) return;
 
         MinecraftClient client = MinecraftClient.getInstance();
@@ -99,6 +102,27 @@ public class EntityOverlayMixin {
             Box hitbox = entity.getBoundingBox().expand(0.3);
             Optional<Vec3d> hit = hitbox.raycast(camera, end);
             if (hit.isPresent()) {
+                // we don't want ESP hacks in a zoom mod!!
+                // i'd use normal methods like BlockHitResult, but it should ignore transparent blocks
+                boolean blocked = false;
+
+                Vec3d direction = hit.get().subtract(camera).normalize();
+                double distance = camera.distanceTo(hit.get());
+                double step = 0.1;
+
+                for (double d = 0; d < distance; d += step) {
+                    Vec3d pos = camera.add(direction.multiply(d));
+                    BlockPos blockPos = BlockPos.ofFloored(pos);
+                    BlockState state = client.world.getBlockState(blockPos);
+
+                    if (!state.isAir() && state.isOpaque()) {
+                        blocked = true;
+                        break;
+                    }
+                }
+
+                if (blocked) continue;
+
                 double dist = camera.squaredDistanceTo(hit.get());
                 if (dist < closestDist) {
                     closestDist = dist;
@@ -116,7 +140,6 @@ public class EntityOverlayMixin {
         TextRenderer textRenderer = client.textRenderer;
         float ease = (float) (1.0 - Math.pow(1.0 - animProgress, 3));
 
-
         String entityName = null;
         String mobTypeLabel = null;
         ItemStack heldItem = ItemStack.EMPTY;
@@ -124,6 +147,11 @@ public class EntityOverlayMixin {
 
         if (config.showEntityNames) {
             entityName = Objects.requireNonNull(entity.getDisplayName()).getString();
+        }
+
+        String healthText = null;
+        if (config.showEntityHealth && entityName != null && entity instanceof LivingEntity livingHealth) {
+            healthText = "♥" + (int) Math.ceil(livingHealth.getHealth());
         }
 
         if (config.showMobTypes && entity instanceof LivingEntity) {
@@ -143,6 +171,8 @@ public class EntityOverlayMixin {
             }
         }
 
+        if (entityName == null && mobTypeLabel == null && heldItem.isEmpty()) return;
+
         final int PADDING = 7;
         final int LINE_H = textRenderer.fontHeight + 3;
         final int ITEM_ROW_H = 18;
@@ -152,7 +182,9 @@ public class EntityOverlayMixin {
         int contentWidth = 90;
 
         if (entityName != null) {
-            contentWidth = Math.max(contentWidth, textRenderer.getWidth(entityName));
+            int nameLineW = textRenderer.getWidth(entityName);
+            if (healthText != null) nameLineW += 4 + textRenderer.getWidth(healthText);
+            contentWidth = Math.max(contentWidth, nameLineW);
         }
         if (mobTypeLabel != null) {
             contentWidth = Math.max(contentWidth, textRenderer.getWidth(mobTypeLabel));
@@ -168,7 +200,7 @@ public class EntityOverlayMixin {
 
         int panelH = PADDING * 2;
 
-        if (entityName != null)   panelH += LINE_H;
+        if (entityName != null) panelH += LINE_H;
         if (mobTypeLabel != null) panelH += LINE_H;
 
         boolean hasItem = !heldItem.isEmpty();
@@ -176,9 +208,13 @@ public class EntityOverlayMixin {
 
         if (hasItem || hasEnchants) {
             if (entityName != null || mobTypeLabel != null) panelH += 4;
-            if (hasItem)    panelH += ITEM_ROW_H;
+            if (hasItem) panelH += ITEM_ROW_H;
             if (hasEnchants) panelH += enchants.size() * LINE_H;
         }
+
+        int lineGap = LINE_H - textRenderer.fontHeight;
+        if (hasEnchants) panelH -= lineGap;
+        else if (!hasItem && (mobTypeLabel != null || entityName != null)) panelH -= lineGap;
 
         int panelW = contentWidth + PADDING * 2;
 
@@ -191,10 +227,8 @@ public class EntityOverlayMixin {
         int bgColor = (int) (ease * 150) << 24;
         int borderColor = (int) (ease * 180) << 24 | 0x00FFE6;
 
-        context.fill(panelX - 1, panelY - 1,
-                panelX + panelW + 1, panelY + panelH + 1, borderColor);
-        context.fill(panelX, panelY,
-                panelX + panelW, panelY + panelH, bgColor);
+        context.fill(panelX - 1, panelY - 1, panelX + panelW + 1, panelY + panelH + 1, borderColor);
+        context.fill(panelX, panelY, panelX + panelW, panelY + panelH, bgColor);
 
         int shadowColor = (int) (ease * 100) << 24;
         int cx = panelX + PADDING;
@@ -203,6 +237,11 @@ public class EntityOverlayMixin {
         if (entityName != null) {
             int nameColor = (int) (ease * 255) << 24 | 0xFFFFFF;
             drawShadowedText(context, textRenderer, entityName, cx, cy, nameColor, shadowColor);
+            if (healthText != null) {
+                int healthColor = (int) (ease * 255) << 24 | 0xFF5555;
+                int healthX = cx + textRenderer.getWidth(entityName) + 4;
+                drawShadowedText(context, textRenderer, healthText, healthX, cy, healthColor, shadowColor);
+            }
             cy += LINE_H;
         }
 
@@ -222,10 +261,10 @@ public class EntityOverlayMixin {
             context.drawItem(heldItem, cx, cy + 1);
 
             String itemName = heldItem.getName().getString();
-            int    rarityHex = getRarityColor(heldItem);
-            int    itemColor = (int) (ease * 255) << 24 | rarityHex;
-            int    itemTextX = cx + ITEM_ICON_W + ITEM_GAP;
-            int    itemTextY = cy + (ITEM_ROW_H / 2) - (textRenderer.fontHeight / 2);
+            int rarityHex = getRarityColor(heldItem);
+            int itemColor = (int) (ease * 255) << 24 | rarityHex;
+            int itemTextX = cx + ITEM_ICON_W + ITEM_GAP;
+            int itemTextY = cy + (ITEM_ROW_H / 2) - (textRenderer.fontHeight / 2);
 
             drawShadowedText(context, textRenderer, itemName, itemTextX, itemTextY, itemColor, shadowColor);
             cy += ITEM_ROW_H;
@@ -242,16 +281,16 @@ public class EntityOverlayMixin {
     @Unique
     private static void drawShadowedText(DrawContext ctx, TextRenderer tr, String text, int x, int y, int color, int shadowColor) {
         ctx.drawText(tr, text, x + 1, y + 1, shadowColor, false);
-        ctx.drawText(tr, text, x,     y,     color,       false);
+        ctx.drawText(tr, text, x, y, color, false);
     }
 
     @Unique
     private static int getRarityColor(ItemStack stack) {
         return switch (stack.getRarity()) {
             case UNCOMMON -> 0xFFFF55; // yellow
-            case RARE     -> 0x55FFFF; // aqua
-            case EPIC     -> 0xFF55FF; // light purple
-            default       -> 0xFFFFFF; // white
+            case RARE -> 0x55FFFF; // aqua
+            case EPIC -> 0xFF55FF; // light purple
+            default -> 0xFFFFFF; // white
         };
     }
 

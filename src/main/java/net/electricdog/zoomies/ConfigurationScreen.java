@@ -242,6 +242,19 @@ public class ConfigurationScreen {
                                 )))
 
                                 .option(Option.<Boolean>createBuilder()
+                                        .name(Text.literal("Enable Entity Overlay"))
+                                        .description(OptionDescription.of(Text.literal(
+                                                "Toggle the entity information overlay shown when zoomed in."
+                                        )))
+                                        .binding(
+                                                defaults.showEntityOverlay,
+                                                () -> config.showEntityOverlay,
+                                                val -> config.showEntityOverlay = val
+                                        )
+                                        .controller(TickBoxControllerBuilder::create)
+                                        .build())
+
+                                .option(Option.<Boolean>createBuilder()
                                         .name(Text.literal("Show Entity Names"))
                                         .description(OptionDescription.of(Text.literal(
                                                 "Display player names and mob names (when nametagged) when zoomed in."
@@ -250,6 +263,19 @@ public class ConfigurationScreen {
                                                 defaults.showEntityNames,
                                                 () -> config.showEntityNames,
                                                 val -> config.showEntityNames = val
+                                        )
+                                        .controller(TickBoxControllerBuilder::create)
+                                        .build())
+
+                                .option(Option.<Boolean>createBuilder()
+                                        .name(Text.literal("Show Entity Health"))
+                                        .description(OptionDescription.of(Text.literal(
+                                                "Display the entity's current health next to their name."
+                                        )))
+                                        .binding(
+                                                defaults.showEntityHealth,
+                                                () -> config.showEntityHealth,
+                                                val -> config.showEntityHealth = val
                                         )
                                         .controller(TickBoxControllerBuilder::create)
                                         .build())
@@ -268,11 +294,9 @@ public class ConfigurationScreen {
                                         .build())
 
                                 .option(Option.<Boolean>createBuilder()
-                                        .name(Text.literal("Show Mob Types"))
+                                        .name(Text.literal("Show Entity Description"))
                                         .description(OptionDescription.of(Text.literal(
-                                                """
-                                                        Show mob type names for unnamed mobs.
-                                                        Only applies to mobs without custom names."""
+                                                "Shows a description of the entity."
                                         )))
                                         .binding(
                                                 defaults.showMobTypes,

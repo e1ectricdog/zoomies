@@ -102,7 +102,8 @@ public class ZoomController implements ClientModInitializer {
     }
 
     private void handleWaypointCreation(MinecraftClient client, ModConfiguration config) {
-        if (!config.enableWaypointIntegration || !XaeroIntegration.isXaerosMinimapLoaded()) {
+        float zoomLevel = 1.0f / getFovMultiplierNoDelta();
+        if (!isZooming() || zoomLevel < (float) config.minZoomForDecorations || !config.enableWaypointIntegration || !XaeroIntegration.isXaerosMinimapLoaded()) {
             return;
         }
 

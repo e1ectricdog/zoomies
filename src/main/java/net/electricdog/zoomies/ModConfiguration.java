@@ -36,7 +36,9 @@ public class ModConfiguration {
     public boolean enableWaypointIntegration = true;
     public String waypointType = "NORMAL"; // NORMAL, DESTINATION
 
+    public boolean showEntityOverlay = true;
     public boolean showEntityNames = true;
+    public boolean showEntityHealth = true;
     public boolean showEntityHeldItems = true;
     public boolean showMobTypes = false;
     public double minZoomForEntityDecorations = 10.0;
