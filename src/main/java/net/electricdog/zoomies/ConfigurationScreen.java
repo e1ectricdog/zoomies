@@ -4,6 +4,7 @@ import dev.isxander.yacl3.api.*;
 import dev.isxander.yacl3.api.controller.EnumControllerBuilder;
 import dev.isxander.yacl3.api.controller.FloatSliderControllerBuilder;
 import dev.isxander.yacl3.api.controller.TickBoxControllerBuilder;
+import dev.isxander.yacl3.api.controller.ColorControllerBuilder;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 
@@ -74,6 +75,22 @@ public class ConfigurationScreen {
                                                 .formatValue(val -> Text.literal(String.format("%.1fx", val))))
                                         .build())
 
+                                .option(Option.<Float>createBuilder()
+                                        .name(Text.literal("Starting Zoom Amount"))
+                                        .description(OptionDescription.of(Text.literal(
+                                                "The amount at which you start your zoom with"
+                                        )))
+                                        .binding(
+                                                (float) defaults.startingZoomAmount,
+                                                () -> (float) config.startingZoomAmount,
+                                                val -> config.startingZoomAmount = val
+                                        )
+                                        .controller(opt -> FloatSliderControllerBuilder.create(opt)
+                                                .range(1f, 100f)
+                                                .step(1f)
+                                                .formatValue(val -> Text.literal(String.format("%.0fx", val))))
+                                        .build())
+
                                 .build())
 
                         .build())
@@ -121,6 +138,27 @@ public class ConfigurationScreen {
                 // Visuals
                 .category(ConfigCategory.createBuilder()
                         .name(Text.literal("Visuals"))
+
+                        .group(OptionGroup.createBuilder()
+                                .name(Text.literal("Color Scheme"))
+                                .description(OptionDescription.of(Text.literal(
+                                        "Customise the accent color."
+                                )))
+
+                                .option(Option.<java.awt.Color>createBuilder()
+                                        .name(Text.literal("Accent Color"))
+                                        .description(OptionDescription.of(Text.literal(
+                                                "Customise the accent color."
+                                        )))
+                                        .binding(
+                                                defaults.getAccentAwtColor(),
+                                                config::getAccentAwtColor,
+                                                val -> config.accentColor = String.format("#%06X", val.getRGB() & 0xFFFFFF)
+                                        )
+                                        .controller(ColorControllerBuilder::create)
+                                        .build())
+
+                                .build())
 
                         .group(OptionGroup.createBuilder()
                                 .name(Text.literal("Zoom Indicator"))
@@ -239,6 +277,22 @@ public class ConfigurationScreen {
                                                 .enumClass(OverlayPosition.class))
                                         .build())
 
+                                .option(Option.<Float>createBuilder()
+                                        .name(Text.literal("Background Opacity"))
+                                        .description(OptionDescription.of(Text.literal(
+                                                "Controls how opaque the block coordinates panel background is"
+                                        )))
+                                        .binding(
+                                                defaults.blockCoordsOpacity,
+                                                () -> config.blockCoordsOpacity,
+                                                val -> config.blockCoordsOpacity = val
+                                        )
+                                        .controller(opt -> FloatSliderControllerBuilder.create(opt)
+                                                .range(0.0f, 1.0f)
+                                                .step(0.05f)
+                                                .formatValue(val -> Text.literal(String.format("%.0f%%", val * 100))))
+                                        .build())
+
                                 .build())
 
                         .group(OptionGroup.createBuilder()
@@ -340,6 +394,22 @@ public class ConfigurationScreen {
                                         )
                                         .controller(opt -> EnumControllerBuilder.create(opt)
                                                 .enumClass(OverlayPosition.class))
+                                        .build())
+
+                                .option(Option.<Float>createBuilder()
+                                        .name(Text.literal("Background Opacity"))
+                                        .description(OptionDescription.of(Text.literal(
+                                                "Controls how opaque the entity information panel background is"
+                                        )))
+                                        .binding(
+                                                defaults.entityOverlayOpacity,
+                                                () -> config.entityOverlayOpacity,
+                                                val -> config.entityOverlayOpacity = val
+                                        )
+                                        .controller(opt -> FloatSliderControllerBuilder.create(opt)
+                                                .range(0.0f, 1.0f)
+                                                .step(0.05f)
+                                                .formatValue(val -> Text.literal(String.format("%.0f%%", val * 100))))
                                         .build())
 
                                 .build())

@@ -1,5 +1,6 @@
 package net.electricdog.zoomies.mixin;
 
+import com.terraformersmc.modmenu.util.mod.Mod;
 import net.electricdog.zoomies.*;
 import net.electricdog.zoomies.util.EnchantRow;
 import net.minecraft.block.BlockState;
@@ -91,8 +92,8 @@ public class ZoomUIMixin {
         int topOffset = getBossBarOffset(client);
 
         switch (style) {
-            case PROGRESS_BAR -> renderProgressBar(context, zoomLevel, animationProgress, topOffset);
-            case WINDOW -> renderWindow(context, zoomLevel, animationProgress, topOffset);
+            case PROGRESS_BAR -> renderProgressBar(context, zoomLevel, animationProgress, topOffset, config);
+            case WINDOW -> renderWindow(context, zoomLevel, animationProgress, topOffset, config);
             case MINIMAL -> renderMinimal(context, zoomLevel, animationProgress, topOffset);
         }
     }
@@ -169,8 +170,8 @@ public class ZoomUIMixin {
         int y = xy[1];
 
         float ease = (float)(1.0 - Math.pow(1.0 - coordsAnimationProgress, 3));
-        int bgColor = (int)(ease * 120) << 24;
-        int borderColor = (int)(ease * 150) << 24 | 0x00FFE6;
+        int bgColor = (int)(ease * config.blockCoordsOpacity * 255) << 24;
+        int borderColor = (int)(ease * config.blockCoordsOpacity * 150) << 24 | config.getAccentRGB();
         int textColor = (int)(ease * 255) << 24 | 0xFFFFFF;
         int shadowColor = (int)(ease * 100) << 24;
 
@@ -341,8 +342,8 @@ public class ZoomUIMixin {
         int panelX = xy[0];
         int panelY = xy[1];
 
-        int bgColor = (int)(ease * 150) << 24;
-        int borderColor = (int)(ease * 180) << 24 | 0x00FFE6;
+        int bgColor = (int)(ease * config.entityOverlayOpacity * 255) << 24;
+        int borderColor = (int)(ease * config.entityOverlayOpacity * 180) << 24 | config.getAccentRGB();
         int shadowColor = (int)(ease * 100) << 24;
 
         context.fill(panelX - 1, panelY - 1, panelX + panelW + 1, panelY + panelH + 1, borderColor);
@@ -368,7 +369,7 @@ public class ZoomUIMixin {
         }
 
         if ((hasItem || hasEnchants) && (entityName != null || mobTypeLabel != null)) {
-            int sepColor = (int)(ease * 100) << 24 | 0x00FFE6;
+            int sepColor = (int)(ease * 100) << 24 | config.getAccentRGB();
             context.fill(cx, cy, cx + contentW, cy + 1, sepColor);
             cy += 4;
         }
@@ -393,7 +394,7 @@ public class ZoomUIMixin {
     }
 
     @Unique
-    private void renderProgressBar(DrawContext context, float zoomLevel, float animProgress, int topOffset) {
+    private void renderProgressBar(DrawContext context, float zoomLevel, float animProgress, int topOffset, ModConfiguration config) {
         int screenWidth = context.getScaledWindowWidth();
         int barWidth = 120, barHeight = 3;
         int barX = (screenWidth - barWidth) / 2;
@@ -403,8 +404,8 @@ public class ZoomUIMixin {
         float easeProgress = (float)(1.0 - Math.pow(1.0 - animProgress, 3));
 
         int bgColor = (int)(easeProgress * 100) << 24;
-        int fillColor = (int)(easeProgress * 200) << 24 | 0x00FFE6;
-        int borderColor = (int)(easeProgress * 180) << 24 | 0xFFFFFF;
+        int fillColor = (int)(easeProgress * 200) << 24 | config.getAccentRGB();
+        int borderColor = (int)(easeProgress * 180) << 24 | config.getSecondaryRGB();
 
         context.fill(barX - 1, barY - 1, barX + barWidth + 1, barY + barHeight + 1, borderColor);
         context.fill(barX, barY, barX + barWidth, barY + barHeight, bgColor);
@@ -424,7 +425,7 @@ public class ZoomUIMixin {
     }
 
     @Unique
-    private void renderWindow(DrawContext context, float zoomLevel, float animProgress, int topOffset) {
+    private void renderWindow(DrawContext context, float zoomLevel, float animProgress, int topOffset, ModConfiguration config) {
         int screenWidth = context.getScaledWindowWidth();
         float easeProgress = (float)(1.0 - Math.pow(1.0 - animProgress, 3));
 
@@ -446,8 +447,8 @@ public class ZoomUIMixin {
         int innerBottomY = innerTopY + innerHeight;
 
         int outerColor = (int)(easeProgress * 150) << 24 | 0xFFFFFF;
-        int innerColor = (int)(easeProgress * 200) << 24 | 0x00FFE6;
-        int ft = 2; // frame thickness
+        int innerColor = (int)(easeProgress * 200) << 24 | config.getAccentRGB();
+        int ft = 2;
 
         context.fill(outerLeftX - ft, topY - ft, outerRightX + ft, topY, outerColor);
         context.fill(outerLeftX - ft, outerBottomY, outerRightX + ft, outerBottomY + ft, outerColor);
