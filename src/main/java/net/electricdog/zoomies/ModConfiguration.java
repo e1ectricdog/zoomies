@@ -35,6 +35,7 @@ public class ModConfiguration {
     public double minZoomForDecorations = 40.0;
     public boolean enableWaypointIntegration = true;
     public String waypointType = "NORMAL"; // NORMAL, DESTINATION
+    public String blockCoordsPosition = "CENTER_LEFT"; // OverlayPosition enum
 
     public boolean showEntityOverlay = true;
     public boolean showEntityNames = true;
@@ -42,6 +43,7 @@ public class ModConfiguration {
     public boolean showEntityHeldItems = true;
     public boolean showMobTypes = false;
     public double minZoomForEntityDecorations = 10.0;
+    public String entityOverlayPosition = "CENTER_LEFT"; // OverlayPosition enum
 
     public static void initialize() {
         if (Files.exists(CONFIG_FILE)) {

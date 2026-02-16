@@ -44,8 +44,7 @@ public class ConfigurationScreen {
                                         .description(OptionDescription.of(Text.literal(
                                                 """
                                                         Controls how quickly the zoom transitions occur.
-                                                        Higher values = quicker zoom response.
-                                                        Lower values = smoother, more gradual zooms.
+
                                                         Requires smooth zooming to be enabled to take effect."""
                                         )))
                                         .binding(
@@ -135,10 +134,10 @@ public class ConfigurationScreen {
                                                 """
                                                         Choose how the zoom level is displayed:
                                                         
-                                                        • Progress Bar - Horizontal bar with zoom level
-                                                        • Window - Animated window frame effect
-                                                        • Minimal - Text display only
-                                                        • None - No indicator"""
+                                                        • Progress Bar
+                                                        • Window
+                                                        • Minimal (Text display)
+                                                        • None"""
                                         )))
                                         .binding(
                                                 ZoomUIStyle.valueOf(defaults.zoomUIStyle),
@@ -176,9 +175,6 @@ public class ConfigurationScreen {
                                                 """
                                                         Controls how strong the vignette effect is.
                                                         
-                                                        Higher values = more pronounced darkening
-                                                        Lower values = subtle effect
-                                                        
                                                         Requires vignette to be enabled."""
                                         )))
                                         .binding(
@@ -203,7 +199,7 @@ public class ConfigurationScreen {
                                 .option(Option.<Boolean>createBuilder()
                                         .name(Text.literal("Show Block Coordinates"))
                                         .description(OptionDescription.of(Text.literal(
-                                                "Display coordinates of the block you're looking at when sufficiently zoomed in."
+                                                "Display coordinates of the block you're looking at when zoomed in enough."
                                         )))
                                         .binding(
                                                 defaults.showBlockCoordinates,
@@ -216,11 +212,7 @@ public class ConfigurationScreen {
                                 .option(Option.<Float>createBuilder()
                                         .name(Text.literal("Minimum Zoom Level"))
                                         .description(OptionDescription.of(Text.literal(
-                                                """
-                                                        The minimum zoom level required to show block coordinates and waypoint prompts.
-                                                        
-                                                        Lower values = shows earlier when zooming
-                                                        Higher values = requires more zoom to activate"""
+                                                "The minimum zoom level required to show block coordinates prompts."
                                         )))
                                         .binding(
                                                 (float) defaults.minZoomForDecorations,
@@ -231,6 +223,20 @@ public class ConfigurationScreen {
                                                 .range(10.0f, 100.0f)
                                                 .step(5.0f)
                                                 .formatValue(val -> Text.literal(String.format("%.0fx", val))))
+                                        .build())
+
+                                .option(Option.<OverlayPosition>createBuilder()
+                                        .name(Text.literal("Panel Position"))
+                                        .description(OptionDescription.of(Text.literal(
+                                                "Choose where the block coordinates panel appears on screen."
+                                        )))
+                                        .binding(
+                                                OverlayPosition.valueOf(defaults.blockCoordsPosition),
+                                                () -> OverlayPosition.valueOf(config.blockCoordsPosition),
+                                                val -> config.blockCoordsPosition = val.name()
+                                        )
+                                        .controller(opt -> EnumControllerBuilder.create(opt)
+                                                .enumClass(OverlayPosition.class))
                                         .build())
 
                                 .build())
@@ -322,6 +328,20 @@ public class ConfigurationScreen {
                                                 .formatValue(val -> Text.literal(String.format("%.0fx", val))))
                                         .build())
 
+                                .option(Option.<OverlayPosition>createBuilder()
+                                        .name(Text.literal("Panel Position"))
+                                        .description(OptionDescription.of(Text.literal(
+                                                "Choose where the entity information panel appears on screen."
+                                        )))
+                                        .binding(
+                                                OverlayPosition.valueOf(defaults.entityOverlayPosition),
+                                                () -> OverlayPosition.valueOf(config.entityOverlayPosition),
+                                                val -> config.entityOverlayPosition = val.name()
+                                        )
+                                        .controller(opt -> EnumControllerBuilder.create(opt)
+                                                .enumClass(OverlayPosition.class))
+                                        .build())
+
                                 .build())
 
                         .build())
@@ -361,8 +381,8 @@ public class ConfigurationScreen {
                                                 """
                                                         Choose what type of waypoint to create:
                                                         
-                                                        • Normal - Standard waypoint marker
-                                                        • Destination - Highlighted navigation target"""
+                                                        • Normal - Standard waypoint
+                                                        • Destination - Deletes when you get to it"""
                                         )))
                                         .binding(
                                                 WaypointType.valueOf(defaults.waypointType),

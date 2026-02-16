@@ -79,7 +79,6 @@ public class ZoomController implements ClientModInitializer {
 
         if (zoomActive && !wasActive) {
             targetIntensity = (INITIAL_ZOOM_MULTIPLIER - MIN_ZOOM_MULTIPLIER) / (MAX_ZOOM_MULTIPLIER - MIN_ZOOM_MULTIPLIER);
-            targetIntensity = Math.max(0.0f, Math.min(1.0f, targetIntensity));
         }
 
         ModConfiguration config = ModConfiguration.get();
@@ -102,12 +101,18 @@ public class ZoomController implements ClientModInitializer {
     }
 
     private void handleWaypointCreation(MinecraftClient client, ModConfiguration config) {
-        float zoomLevel = 1.0f / getFovMultiplierNoDelta();
-        if (!isZooming() || zoomLevel < (float) config.minZoomForDecorations || !config.enableWaypointIntegration || !XaeroIntegration.isXaerosMinimapLoaded()) {
-            return;
+        boolean pressed = false;
+        while (createWaypoint.wasPressed()) {
+            pressed = true;
         }
 
-        if (createWaypoint.wasPressed() && lastTargetedBlock != null) {
+        float zoomLevel = 1.0f / getFovMultiplierNoDelta();
+        boolean inRange = isZooming()
+                && zoomLevel >= (float) config.minZoomForDecorations
+                && config.enableWaypointIntegration
+                && XaeroIntegration.isXaerosMinimapLoaded();
+
+        if (pressed && inRange && lastTargetedBlock != null) {
             createWaypointAtBlock(client, lastTargetedBlock, config);
         }
     }
@@ -131,7 +136,7 @@ public class ZoomController implements ClientModInitializer {
                 );
             }
         } catch (IllegalArgumentException e) {
-            ZoomiesMod.LOGGER.error("Invalid waypoint type: " + config.waypointType, e);
+            ZoomiesMod.LOGGER.error("Invalid waypoint type: {}", config.waypointType, e);
         }
     }
 
