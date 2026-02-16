@@ -6,6 +6,6 @@
 
 - [ ] Add a readme
 
-### Done ✓
+### Done
 
 - [x] Created UI positioning configs
