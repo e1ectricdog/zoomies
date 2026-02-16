@@ -20,7 +20,6 @@ public class ZoomController implements ClientModInitializer {
 
     private static final float MAX_ZOOM_MULTIPLIER = 100.0f;
     private static final float MIN_ZOOM_MULTIPLIER = 1.0f;
-    private static final float INITIAL_ZOOM_MULTIPLIER = 3.0f;
 
     public static KeyBinding activateZoom;
     public static KeyBinding createWaypoint;
@@ -77,11 +76,11 @@ public class ZoomController implements ClientModInitializer {
             targetIntensity = 0.0f;
         }
 
-        if (zoomActive && !wasActive) {
-            targetIntensity = (INITIAL_ZOOM_MULTIPLIER - MIN_ZOOM_MULTIPLIER) / (MAX_ZOOM_MULTIPLIER - MIN_ZOOM_MULTIPLIER);
-        }
-
         ModConfiguration config = ModConfiguration.get();
+
+        if (zoomActive && !wasActive) {
+            targetIntensity = ((float) config.startingZoomAmount - MIN_ZOOM_MULTIPLIER) / (MAX_ZOOM_MULTIPLIER - MIN_ZOOM_MULTIPLIER);
+        }
 
         if (config.smoothZooming) {
             float smoothSpeed = (float) config.zoomTransitionSpeed * 0.25f;
