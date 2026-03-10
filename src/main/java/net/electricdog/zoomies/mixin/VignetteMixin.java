@@ -32,7 +32,7 @@ public class VignetteMixin {
         }
 
         float zoomIntensity = 1.0f - ZoomController.getCurrentFOVMultiplier(tickDelta);
-        float targetVignette = zoomIntensity * (float) config.vignetteIntensity;
+        float targetVignette = zoomIntensity * config.vignetteIntensity;
 
         vignetteDarkness += (targetVignette - vignetteDarkness) * 0.15f;
     }

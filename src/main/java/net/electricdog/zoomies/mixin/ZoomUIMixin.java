@@ -1,6 +1,5 @@
 package net.electricdog.zoomies.mixin;
 
-import com.terraformersmc.modmenu.util.mod.Mod;
 import net.electricdog.zoomies.*;
 import net.electricdog.zoomies.util.EnchantRow;
 import net.minecraft.block.BlockState;
@@ -203,7 +202,7 @@ public class ZoomUIMixin {
 
         float fovMultiplier = ZoomController.getCurrentFOVMultiplier(tickDelta);
         float zoomLevel = 1.0f / fovMultiplier;
-        boolean aboveThreshold = zoomLevel >= (float) config.minZoomForEntityDecorations;
+        boolean aboveThreshold = zoomLevel >= config.minZoomForEntityDecorations;
 
         Entity target = aboveThreshold ? getTargetedEntity(client, tickDelta) : null;
 

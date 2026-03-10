@@ -49,8 +49,8 @@ public class ConfigurationScreen {
                                                         Requires smooth zooming to be enabled to take effect."""
                                         )))
                                         .binding(
-                                                (float) defaults.zoomTransitionSpeed,
-                                                () -> (float) config.zoomTransitionSpeed,
+                                                defaults.zoomTransitionSpeed,
+                                                () -> config.zoomTransitionSpeed,
                                                 val -> config.zoomTransitionSpeed = val
                                         )
                                         .controller(opt -> FloatSliderControllerBuilder.create(opt)
@@ -65,8 +65,8 @@ public class ConfigurationScreen {
                                                 "Adjust if scroll zooming feels too fast or too slow."
                                         )))
                                         .binding(
-                                                (float) defaults.zoomScrollSensitivity,
-                                                () -> (float) config.zoomScrollSensitivity,
+                                                defaults.zoomScrollSensitivity,
+                                                () -> config.zoomScrollSensitivity,
                                                 val -> config.zoomScrollSensitivity = val
                                         )
                                         .controller(opt -> FloatSliderControllerBuilder.create(opt)
@@ -81,8 +81,8 @@ public class ConfigurationScreen {
                                                 "The amount at which you start your zoom with"
                                         )))
                                         .binding(
-                                                (float) defaults.startingZoomAmount,
-                                                () -> (float) config.startingZoomAmount,
+                                                defaults.startingZoomAmount,
+                                                () -> config.startingZoomAmount,
                                                 val -> config.startingZoomAmount = val
                                         )
                                         .controller(opt -> FloatSliderControllerBuilder.create(opt)
@@ -216,8 +216,8 @@ public class ConfigurationScreen {
                                                         Requires vignette to be enabled."""
                                         )))
                                         .binding(
-                                                (float) defaults.vignetteIntensity,
-                                                () -> (float) config.vignetteIntensity,
+                                                defaults.vignetteIntensity,
+                                                () -> config.vignetteIntensity,
                                                 val -> config.vignetteIntensity = val
                                         )
                                         .controller(opt -> FloatSliderControllerBuilder.create(opt)
@@ -253,8 +253,8 @@ public class ConfigurationScreen {
                                                 "The minimum zoom level required to show block coordinates prompts."
                                         )))
                                         .binding(
-                                                (float) defaults.minZoomForDecorations,
-                                                () -> (float) config.minZoomForDecorations,
+                                                defaults.minZoomForDecorations,
+                                                () -> config.minZoomForDecorations,
                                                 val -> config.minZoomForDecorations = val
                                         )
                                         .controller(opt -> FloatSliderControllerBuilder.create(opt)
@@ -372,8 +372,8 @@ public class ConfigurationScreen {
                                                 "The minimum zoom level required to show entity information."
                                         )))
                                         .binding(
-                                                (float) defaults.minZoomForEntityDecorations,
-                                                () -> (float) config.minZoomForEntityDecorations,
+                                                defaults.minZoomForEntityDecorations,
+                                                () -> config.minZoomForEntityDecorations,
                                                 val -> config.minZoomForEntityDecorations = val
                                         )
                                         .controller(opt -> FloatSliderControllerBuilder.create(opt)

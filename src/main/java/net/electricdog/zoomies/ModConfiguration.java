@@ -20,24 +20,22 @@ public class ModConfiguration {
 
     private static ModConfiguration instance;
 
-    // alot of doubles don't need to be doubles
-
-    public double zoomTransitionSpeed = 2.5;
-    public double zoomScrollSensitivity = 1;
+    public float zoomTransitionSpeed = 2.5f;
+    public float zoomScrollSensitivity = 1.0f;
     public boolean normalizeMouseSensitivity = true;
-    public double startingZoomAmount = 3;
+    public float startingZoomAmount = 3.0f;
     public boolean disableViewBobbing = false;
     public boolean smoothZooming = true;
     public boolean enableVignette = true;
-    public double vignetteIntensity = 0.5;
-    public String zoomUIStyle = "PROGRESS_BAR"; // PROGRESS_BAR, WINDOW, MINIMAL, NONE
+    public float vignetteIntensity = 0.5f;
+    public String zoomUIStyle = "PROGRESS_BAR";
     public float entityOverlayOpacity = 0.50f;
 
     public boolean showBlockCoordinates = true;
-    public double minZoomForDecorations = 40.0;
+    public float minZoomForDecorations = 40.0f;
     public boolean enableWaypointIntegration = true;
-    public String waypointType = "NORMAL"; // NORMAL, DESTINATION
-    public String blockCoordsPosition = "CENTER_LEFT"; // OverlayPosition enum
+    public String waypointType = "NORMAL";
+    public String blockCoordsPosition = "CENTER_LEFT";
     public float blockCoordsOpacity = 0.50f;
 
     public boolean showEntityOverlay = true;
@@ -45,8 +43,8 @@ public class ModConfiguration {
     public boolean showEntityHealth = true;
     public boolean showEntityHeldItems = true;
     public boolean showMobTypes = false;
-    public double minZoomForEntityDecorations = 10.0;
-    public String entityOverlayPosition = "CENTER_LEFT"; // OverlayPosition enum
+    public float minZoomForEntityDecorations = 10.0f;
+    public String entityOverlayPosition = "CENTER_LEFT";
 
     public String accentColor = "#00FFE6";
 

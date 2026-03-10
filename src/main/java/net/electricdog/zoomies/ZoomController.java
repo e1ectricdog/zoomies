@@ -79,11 +79,11 @@ public class ZoomController implements ClientModInitializer {
         ModConfiguration config = ModConfiguration.get();
 
         if (zoomActive && !wasActive) {
-            targetIntensity = ((float) config.startingZoomAmount - MIN_ZOOM_MULTIPLIER) / (MAX_ZOOM_MULTIPLIER - MIN_ZOOM_MULTIPLIER);
+            targetIntensity = (config.startingZoomAmount - MIN_ZOOM_MULTIPLIER) / (MAX_ZOOM_MULTIPLIER - MIN_ZOOM_MULTIPLIER);
         }
 
         if (config.smoothZooming) {
-            float smoothSpeed = (float) config.zoomTransitionSpeed * 0.25f;
+            float smoothSpeed = config.zoomTransitionSpeed * 0.25f;
             currentIntensity += (targetIntensity - currentIntensity) * smoothSpeed;
 
             if (Math.abs(currentIntensity - targetIntensity) < 0.001f) {
@@ -107,7 +107,7 @@ public class ZoomController implements ClientModInitializer {
 
         float zoomLevel = 1.0f / getFovMultiplierNoDelta();
         boolean inRange = isZooming()
-                && zoomLevel >= (float) config.minZoomForDecorations
+                && zoomLevel >= config.minZoomForDecorations
                 && config.enableWaypointIntegration
                 && XaeroIntegration.isXaerosMinimapLoaded();
 
@@ -170,15 +170,6 @@ public class ZoomController implements ClientModInitializer {
         }
     }
 
-    private static float getAdjustedSensitivity() {
-        float fovMultiplier = getFovMultiplierNoDelta();
-
-        float adjustedSensitivity = savedMouseSensitivity.floatValue() * fovMultiplier;
-
-        adjustedSensitivity = MathHelper.clamp(adjustedSensitivity, 0.0f, 1.0f);
-        return adjustedSensitivity;
-    }
-
     private void applyViewBobbing(MinecraftClient client, ModConfiguration config) {
         boolean shouldDisable = isZooming() && config.disableViewBobbing;
 
@@ -202,7 +193,7 @@ public class ZoomController implements ClientModInitializer {
 
         float baseStep = 0.02f + (targetIntensity * 0.08f);
 
-        float sensitivityMultiplier = (float) config.zoomScrollSensitivity;
+        float sensitivityMultiplier = config.zoomScrollSensitivity;
         float step = baseStep * sensitivityMultiplier * Math.signum(scrollDelta);
 
         targetIntensity += step;
