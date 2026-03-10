@@ -1,12 +1,14 @@
-package net.electricdog.zoomies;
+package net.electricdog.zoomies.enums;
 
-public enum WaypointType {
-    NORMAL("Normal"),
-    DESTINATION("Destination");
+public enum ZoomUIStyle {
+    PROGRESS_BAR("Progress Bar"),
+    WINDOW("Window"),
+    MINIMAL("Minimal"),
+    NONE("None");
 
     private final String displayName;
 
-    WaypointType(String displayName) {
+    ZoomUIStyle(String displayName) {
         this.displayName = displayName;
     }
 

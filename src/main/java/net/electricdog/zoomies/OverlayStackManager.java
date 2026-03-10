@@ -1,5 +1,6 @@
 package net.electricdog.zoomies;
 
+import net.electricdog.zoomies.enums.OverlayPosition;
 import java.util.EnumMap;
 import java.util.Map;
 

@@ -5,6 +5,7 @@ import dev.isxander.yacl3.api.controller.EnumControllerBuilder;
 import dev.isxander.yacl3.api.controller.FloatSliderControllerBuilder;
 import dev.isxander.yacl3.api.controller.TickBoxControllerBuilder;
 import dev.isxander.yacl3.api.controller.ColorControllerBuilder;
+import net.electricdog.zoomies.enums.*;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 
@@ -26,6 +27,22 @@ public class ConfigurationScreen {
                                 .description(OptionDescription.of(Text.literal(
                                         "Control how zooming behaves and responds"
                                 )))
+
+                                .option(Option.<ZoomMode>createBuilder()
+                                        .name(Text.literal("Zoom Mode"))
+                                        .description(OptionDescription.of(Text.literal(
+                                                """
+                                                        • Hold
+                                                        • Toggle"""
+                                        )))
+                                        .binding(
+                                                ZoomMode.valueOf(defaults.zoomMode),
+                                                () -> ZoomMode.valueOf(config.zoomMode),
+                                                val -> config.zoomMode = val.name()
+                                        )
+                                        .controller(opt -> EnumControllerBuilder.create(opt)
+                                                .enumClass(ZoomMode.class))
+                                        .build())
 
                                 .option(Option.<Boolean>createBuilder()
                                         .name(Text.literal("Smooth Zooming"))
@@ -88,6 +105,63 @@ public class ConfigurationScreen {
                                         .controller(opt -> FloatSliderControllerBuilder.create(opt)
                                                 .range(1f, 100f)
                                                 .step(1f)
+                                                .formatValue(val -> Text.literal(String.format("%.0fx", val))))
+                                        .build())
+
+                                .build())
+
+                        .group(OptionGroup.createBuilder()
+                                .name(Text.literal("Cinematic Mode"))
+                                .description(OptionDescription.of(Text.literal(
+                                        "Asymptotic zoom that rushes in then slows to a crawl, with smoothed camera movement"
+                                )))
+
+                                .option(Option.<Boolean>createBuilder()
+                                        .name(Text.literal("Enable Cinematic Mode"))
+                                        .description(OptionDescription.of(Text.literal(
+                                                """
+                                                        Zoom continuously accelerates then fades away forever.
+                                                        Mouse movement is also smoothed for a cinematic feel (as per other mods).
+                                                        
+                                                        [!] Overrides starting zoom amount and disables scroll zoom."""
+                                        )))
+                                        .binding(
+                                                defaults.cinematicMode,
+                                                () -> config.cinematicMode,
+                                                val -> config.cinematicMode = val
+                                        )
+                                        .controller(TickBoxControllerBuilder::create)
+                                        .build())
+
+                                .option(Option.<Float>createBuilder()
+                                        .name(Text.literal("Cinematic Zoom Speed"))
+                                        .description(OptionDescription.of(Text.literal(
+                                                "Controls how zoomy the zoom zooms toward max zoom."
+                                        )))
+                                        .binding(
+                                                defaults.cinematicZoomSpeed,
+                                                () -> config.cinematicZoomSpeed,
+                                                val -> config.cinematicZoomSpeed = val
+                                        )
+                                        .controller(opt -> FloatSliderControllerBuilder.create(opt)
+                                                .range(0.25f, 3.0f)
+                                                .step(0.25f)
+                                                .formatValue(val -> Text.literal(String.format("%.2fx", val))))
+                                        .build())
+
+                                .option(Option.<Float>createBuilder()
+                                        .name(Text.literal("Cinematic Max Zoom"))
+                                        .description(OptionDescription.of(Text.literal(
+                                                "The zoom level cinematic mode zooms to."
+                                        )))
+                                        .binding(
+                                                defaults.cinematicMaxZoom,
+                                                () -> config.cinematicMaxZoom,
+                                                val -> config.cinematicMaxZoom = val
+                                        )
+                                        .controller(opt -> FloatSliderControllerBuilder.create(opt)
+                                                .range(2.0f, 50.0f)
+                                                .step(1.0f)
                                                 .formatValue(val -> Text.literal(String.format("%.0fx", val))))
                                         .build())
 

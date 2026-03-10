@@ -48,6 +48,11 @@ public class ModConfiguration {
 
     public String accentColor = "#00FFE6";
 
+    public String zoomMode = "HOLD";
+    public boolean cinematicMode = false;
+    public float cinematicZoomSpeed = 1.0f;
+    public float cinematicMaxZoom = 5.0f;
+
     public int getAccentRGB() {
         return parseHexColor(accentColor) & 0x00FFFFFF;
     }

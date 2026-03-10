@@ -1,4 +1,4 @@
-package net.electricdog.zoomies;
+package net.electricdog.zoomies.enums;
 
 public enum OverlayPosition {
     TOP_LEFT("Top Left"),

@@ -7,6 +7,7 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
+import net.electricdog.zoomies.enums.*;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -32,6 +33,7 @@ public class ZoomController implements ClientModInitializer {
 
     private static Double savedMouseSensitivity = null;
     private static Boolean savedViewBobbing = null;
+    private static boolean lastKeyState = false;
 
     private static BlockPos lastTargetedBlock = null;
 
@@ -70,22 +72,36 @@ public class ZoomController implements ClientModInitializer {
         prevIntensity = currentIntensity;
 
         boolean wasActive = zoomActive;
-        zoomActive = activateZoom.isPressed();
+        boolean keyHeld = activateZoom.isPressed();
+        ModConfiguration config = ModConfiguration.get();
+        ZoomMode mode = ZoomMode.valueOf(config.zoomMode);
+
+        if (mode == ZoomMode.TOGGLE) {
+            if (keyHeld && !lastKeyState) {
+                zoomActive = !zoomActive;
+            }
+        } else {
+            zoomActive = keyHeld;
+        }
+        lastKeyState = keyHeld;
 
         if (wasActive && !zoomActive) {
             targetIntensity = 0.0f;
         }
 
-        ModConfiguration config = ModConfiguration.get();
-
-        if (zoomActive && !wasActive) {
+        if (zoomActive && !wasActive && !config.cinematicMode) {
             targetIntensity = (config.startingZoomAmount - MIN_ZOOM_MULTIPLIER) / (MAX_ZOOM_MULTIPLIER - MIN_ZOOM_MULTIPLIER);
         }
 
-        if (config.smoothZooming) {
+        if (config.cinematicMode && zoomActive) {
+            float maxIntensity = (config.cinematicMaxZoom - MIN_ZOOM_MULTIPLIER) / (MAX_ZOOM_MULTIPLIER - MIN_ZOOM_MULTIPLIER);
+            float gap = maxIntensity - targetIntensity;
+            targetIntensity += gap * 0.04f * config.cinematicZoomSpeed;
+        }
+
+        if (config.smoothZooming || config.cinematicMode) {
             float smoothSpeed = config.zoomTransitionSpeed * 0.25f;
             currentIntensity += (targetIntensity - currentIntensity) * smoothSpeed;
-
             if (Math.abs(currentIntensity - targetIntensity) < 0.001f) {
                 currentIntensity = targetIntensity;
             }
@@ -188,6 +204,7 @@ public class ZoomController implements ClientModInitializer {
 
     public static void processScroll(float scrollDelta) {
         if (!zoomActive) return;
+        if (ModConfiguration.get().cinematicMode) return;
 
         ModConfiguration config = ModConfiguration.get();
 
@@ -227,5 +244,9 @@ public class ZoomController implements ClientModInitializer {
 
     public static boolean isZooming() {
         return currentIntensity > 0.001f || targetIntensity > 0.001f;
+    }
+
+    public static boolean isCinematicActive() {
+        return isZooming() && ModConfiguration.get().cinematicMode;
     }
 }

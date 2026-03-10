@@ -12,6 +12,7 @@ import xaero.hud.minimap.BuiltInHudModules;
 import xaero.hud.minimap.module.MinimapSession;
 import xaero.hud.minimap.waypoint.set.WaypointSet;
 import xaero.hud.minimap.world.MinimapWorld;
+import net.electricdog.zoomies.enums.WaypointType;
 import net.electricdog.zoomies.mixin.AccessorWaypointSet;
 
 import java.util.List;
@@ -55,7 +56,7 @@ public class XaeroIntegration {
                 return false;
             }
 
-            WaypointSet waypointSet = getOrCreateWaypointSet(minimapWorld, WAYPOINT_SET_NAME);
+            WaypointSet waypointSet = getOrCreateWaypointSet(minimapWorld);
             if (waypointSet == null) {
                 return false;
             }
@@ -107,11 +108,11 @@ public class XaeroIntegration {
         return null;
     }
 
-    private static WaypointSet getOrCreateWaypointSet(MinimapWorld minimapWorld, String setName) {
-        WaypointSet waypointSet = minimapWorld.getWaypointSet(setName);
+    private static WaypointSet getOrCreateWaypointSet(MinimapWorld minimapWorld) {
+        WaypointSet waypointSet = minimapWorld.getWaypointSet(XaeroIntegration.WAYPOINT_SET_NAME);
         if (waypointSet == null) {
-            minimapWorld.addWaypointSet(setName);
-            waypointSet = minimapWorld.getWaypointSet(setName);
+            minimapWorld.addWaypointSet(XaeroIntegration.WAYPOINT_SET_NAME);
+            waypointSet = minimapWorld.getWaypointSet(XaeroIntegration.WAYPOINT_SET_NAME);
         }
         return waypointSet;
     }

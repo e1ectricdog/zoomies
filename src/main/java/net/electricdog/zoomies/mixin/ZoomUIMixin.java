@@ -1,6 +1,7 @@
 package net.electricdog.zoomies.mixin;
 
 import net.electricdog.zoomies.*;
+import net.electricdog.zoomies.enums.*;
 import net.electricdog.zoomies.util.EnchantRow;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
