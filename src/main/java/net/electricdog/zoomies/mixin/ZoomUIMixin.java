@@ -52,6 +52,8 @@ public class ZoomUIMixin {
 
     @Inject(method = "render", at = @At("TAIL"))
     private void renderOverlays(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
+        MinecraftClient client = MinecraftClient.getInstance();
+        if (client.options.hudHidden) return;
         ModConfiguration config = ModConfiguration.get();
         float tickDelta = tickCounter.getFixedDeltaTicks();
 

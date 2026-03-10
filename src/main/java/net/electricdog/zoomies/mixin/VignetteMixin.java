@@ -2,6 +2,7 @@ package net.electricdog.zoomies.mixin;
 
 import net.electricdog.zoomies.ModConfiguration;
 import net.electricdog.zoomies.ZoomController;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.render.RenderTickCounter;
@@ -25,7 +26,7 @@ public class VignetteMixin {
         ModConfiguration config = ModConfiguration.get();
         float tickDelta = tickCounter.getFixedDeltaTicks();
 
-        if (!config.enableVignette || !ZoomController.isZooming()) {
+        if (!config.enableVignette || !ZoomController.isZooming() || MinecraftClient.getInstance().options.hudHidden) {
             vignetteDarkness = Math.max(0, vignetteDarkness - 0.05f);
             return;
         }
